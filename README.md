@@ -131,91 +131,72 @@ the documentation of the library.
 
 The following settings have to be contained in the file:
 
-input\_devices
+<span>\
+**input\_devices**</span>: A list of strings is expected. Each item in
+the list has to be a path to an input device node. With this list you
+select the hardware that is watched by hid2out. <span>\
 
-:   A list of strings is expected. Each item in the list has to be a
-    path to an input device node. With this list you select the hardware
-    that is watched by hid2out.
+**eventmaps**</span>: A list of settings is expected. Each setting
+associates a name to an event map, which defines the actions that are
+triggered for particular input events. At least a map named `main` must
+be present. This is the map that is in effect initially. (Later you can
+switch to another map.)
 
-eventmaps
+An input map is a list of rules. A rule is a list of a pattern and an
+action. For each input event the rules are tried in the order they occur
+in the map. The pattern is matched against the channel event and if it
+succeeds, the action is executed. A channel event consists of four
+attributes:
 
-:   A list of settings is expected. Each setting associates a name to an
-    event map, which defines the actions that are triggered for
-    particular input events. At least a map named `main` must be
-    present. This is the map that is in effect initially. (Later you can
-    switch to another map.)
+-   channel
 
-    An input map is a list of rules. A rule is a list of a pattern and
-    an action. For each input event the rules are tried in the order
-    they occur in the map. The pattern is matched against the channel
-    event and if it succeeds, the action is executed. A channel event
-    consists of four attributes:
+-   type
 
-    -   channel
+-   code
 
-    -   type
+-   value
 
-    -   code
+The latter three correspond to the slots with the same name of the
+struct `unput_event` in `linux/input.h`. The first one identifies the
+input device from which the event has been read. They are numbered
+according to the paths in the input\_devices setting. The first element
+is associated with channel number 0, the second with channel number 1,
+and so on. The channel event matches with the pattern if all of its
+attributes are within the ranges.
 
-    -   value
+Ranges are represented by lists of length 0 to 2 containing integers and
+empty lists. The first element indicates the minimum, the second one the
+maximum, provided that they are not missing. A bound of the range is
+also considered missing if it is not integers but an empty list.
 
-    The latter three correspond to the slots with the same name of the
-    struct `unput_event` in `linux/input.h`. The first one identifies
-    the input device from which the event has been read. They are
-    numbered according to the paths in the input\_devices setting. The
-    first element is associated with channel number 0, the second with
-    channel number 1, and so on. The channel event matches with the
-    pattern if all of its attributes are within the ranges.
+You may use evtest to help you figure out how the events triggered by
+your input hardware are represented internally.
 
-    Ranges are represented by lists of length 0 to 2 containing integers
-    and empty lists. The first element indicates the minimum, the second
-    one the maximum, provided that they are not missing. A bound of the
-    range is also considered missing if it is not integers but an empty
-    list.
+An action is a list with an action name, a string, as its first element
+followed by arguments or it is an empty list.
 
-    You may use evtest to help you figure out how the events triggered
-    by your input hardware are represented internally.
+These are the actions that are understood:
 
-    An action is a list with an action name, a string, as its first
-    element followed by arguments or it is an empty list.
+<span>\
+**exit**</span> (no arguments): Terminate hid2out. <span>\
+**switch**</span> with an event map name as argument: Switch the current
+event map to the named one. <span>\
+**send**</span> followed by 4 integers/empty lists: Write a
+representation of the channel event to the standard output. The four
+arguments replace the attributes of the original channel event, in case
+they are integers and not missing. Empty lists are considered missing
+arguments. <span>\
+**exec**</span> followed by a string: Lauch the process indicated by the
+string, i.e. the linux standard library function system is called with
+string as its argument. <span>\
+**An empty list**</span>: Do nothing, just ignore the event.
 
-    These are the actions that are understood:
+The default action is send. So if you only want an event to be passed to
+the standard output you don’t have to give a rule for that.
 
-    exit
-
-    :   (no arguments): Terminate hid2out.
-
-    switch
-
-    :   with an event map name as argument: Switch the current event map
-        to the named one.
-
-    send
-
-    :   followed by 4 integers/empty lists: Write a representation of
-        the channel event to the standard output. The four arguments
-        replace the attributes of the original channel event, in case
-        they are integers and not missing. Empty lists are considered
-        missing arguments.
-
-    exec
-
-    :   followed by a string: Lauch the process indicated by the string,
-        i.e. the linux standard library function system is called with
-        string as its argument.
-
-    An empty list
-
-    :   : Do nothing, just ignore the event.
-
-    The default action is send. So if you only want an event to be
-    passed to the standard output you don’t have to give a rule for
-    that.
-
-    You should at least define a rule with the action “exit”. Otherwise,
-    you may not be able to terminate the program. Note, that Ctrl-C may
-    not work, if it is grabbed by hid2out and your shell will not see
-    it.
+You should at least define a rule with the action “exit”. Otherwise, you
+may not be able to terminate the program. Note, that Ctrl-C may not
+work, if it is grabbed by hid2out and your shell will not see it.
 
 Let’s have a look at an example configuration file
 
