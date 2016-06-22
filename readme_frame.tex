@@ -2,6 +2,8 @@
 \usepackage{hyperref}
 \renewcommand{\thesection}{}
 \renewcommand{\thesubsection}{\Roman{subsection}.}
+% We need to hide \par from pandoc
+\newcommand{\latexpar}{\par}
 \begin{document}
 \sloppy
 \include{README}

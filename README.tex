@@ -1,5 +1,6 @@
-\newenvironment{pdescription}{\hbox{}\hfill}{}
-\newcommand{\pitem}[1]{\\ \textbf{#1}}
+%\newenvironment{pitem}[1]{\noindent\textbf{#1}}{\par}
+\newenvironment{pdescription}{\begin{list}{}{}\item}{\end{list}}
+\newcommand{\pitem}[2]{\par \textbf{#1}#2:}
 
 \section{huipfui}
 \label{huipfui}
@@ -160,12 +161,12 @@ refer to the documentation of the library.
 
 The following settings have to be contained in the  file:
 \begin{pdescription}
-\pitem{input\_devices}:
+\pitem{input\_devices}{}
   A list of strings is expected. Each item in the list 
   has to be a path to an input device node.
   With this list you select the hardware that is watched by
   hid2out.
-\pitem{eventmaps}:
+\pitem{eventmaps}{}
   A list of settings is expected.
   Each setting associates a name to an event map, which
   defines the actions that are triggered for particular input events.
@@ -212,22 +213,22 @@ The following settings have to be contained in the  file:
   These are the actions that are understood:
 
   \begin{pdescription}
-  \pitem{exit} (no arguments):
+  \pitem{exit}{ (no arguments)}
     Terminate hid2out.
-  \pitem{switch} with an event map name as argument:
+  \pitem{switch}{ with an event map name as argument}
     Switch the current event map to the named one.
-  \pitem{send} followed by 4 integers/empty lists:
+  \pitem{send}{ followed by 4 integers/empty lists}
     Write a representation of the channel event to the 
     standard output. The four arguments replace the
     attributes of the original channel event,
     in case they are integers and not missing.
     Empty lists are considered missing arguments.
-  \pitem{exec} followed by a string:
+  \pitem{exec}{ followed by a string}
     Lauch the process indicated by the string, i.e. the linux standard library function system is 
     called with string as its argument.
-  \pitem{An empty list}:
+  \pitem{An empty list}{}
     Do nothing, just ignore the event.
-  \end{pdescription}
+\end{pdescription}
   
   The default action is send. So if you only want an event
   to be passed to the standard output you don't have to
